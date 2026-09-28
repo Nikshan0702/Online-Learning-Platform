@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Course schema referencing the User model for instructor
 const courseSchema = new mongoose.Schema(
   {
     title: {
@@ -23,9 +22,7 @@ const courseSchema = new mongoose.Schema(
       required: true,
     },
   },
-  {
-    timestamps: true, // automatically manages createdAt and updatedAt
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Course', courseSchema);

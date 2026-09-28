@@ -15,35 +15,28 @@ const CourseDetails = () => {
   const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
 
   useEffect(() => {
-    fetchCourseDetails();
-    if (isStudent) {
-      checkEnrollmentStatus();
-    }
-  }, [id, isStudent]);
+    fetchCourse();
+    if (isStudent) checkEnrollment();
+  }, [id]);
 
-  const fetchCourseDetails = async () => {
+  const fetchCourse = async () => {
     try {
-      setLoading(true);
       const res = await api.get(`/courses/${id}`);
       setCourse(res.data);
-    } catch (err) {
-      setError('Course not found or failed to load.');
+    } catch {
+      setError('Course not found.');
     } finally {
       setLoading(false);
     }
   };
 
-  const checkEnrollmentStatus = async () => {
+  const checkEnrollment = async () => {
     try {
       const res = await api.get('/enrollments/my-courses');
-      const isEnrolled = res.data.some(
-        (item) => item.course && item.course._id === id
-      );
-      if (isEnrolled) {
-        setAlreadyEnrolled(true);
-      }
-    } catch (err) {
-      // Non-fatal, just continue
+      const enrolled = res.data.some((item) => item.course?._id === id);
+      setAlreadyEnrolled(enrolled);
+    } catch {
+      // ignore
     }
   };
 
@@ -51,30 +44,23 @@ const CourseDetails = () => {
     try {
       setEnrolling(true);
       setError('');
-      setEnrollSuccess('');
-
       const res = await api.post('/enrollments', { courseId: id });
-      setEnrollSuccess(res.data.message || 'Successfully enrolled!');
+      setEnrollSuccess(res.data.message);
       setAlreadyEnrolled(true);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Enrollment failed. Please try again.';
-      setError(msg);
+      setError(err.response?.data?.message || 'Enrollment failed.');
     } finally {
       setEnrolling(false);
     }
   };
 
-  if (loading) {
-    return <div className="page-container loading-state">Loading course details...</div>;
-  }
+  if (loading) return <div className="page-container loading-state">Loading...</div>;
 
   if (!course) {
     return (
       <div className="page-container empty-state">
         <p>{error || 'Course not found'}</p>
-        <Link to="/courses" className="btn btn-secondary">
-          ← Back to Courses
-        </Link>
+        <Link to="/courses" className="btn btn-secondary">← Back to Courses</Link>
       </div>
     );
   }
@@ -89,7 +75,7 @@ const CourseDetails = () => {
         <div className="course-detail-header">
           <h1>{course.title}</h1>
           <p className="course-detail-instructor">
-            👤 Taught by <strong>{course.instructor?.name || 'Instructor'}</strong> ({course.instructor?.email})
+            👤 Taught by <strong>{course.instructor?.name}</strong> ({course.instructor?.email})
           </p>
         </div>
 
@@ -102,7 +88,7 @@ const CourseDetails = () => {
         </div>
 
         <div className="course-detail-section">
-          <h3>Course Content & Syllabus</h3>
+          <h3>Course Content</h3>
           <div className="course-content-box">
             <pre className="content-pre">{course.content}</pre>
           </div>
@@ -111,15 +97,9 @@ const CourseDetails = () => {
         {isStudent && (
           <div className="course-action-section">
             {alreadyEnrolled ? (
-              <div className="enrolled-badge">
-                ✅ You are currently enrolled in this course (Status: Active)
-              </div>
+              <div className="enrolled-badge">✅ You are enrolled in this course (Status: Active)</div>
             ) : (
-              <button
-                onClick={handleEnroll}
-                disabled={enrolling}
-                className="btn btn-primary btn-lg"
-              >
+              <button onClick={handleEnroll} disabled={enrolling} className="btn btn-primary btn-lg">
                 {enrolling ? 'Enrolling...' : 'Enroll in this Course'}
               </button>
             )}

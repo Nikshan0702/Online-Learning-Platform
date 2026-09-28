@@ -25,9 +25,7 @@ const Navbar = () => {
                 <>
                   <Link to="/courses">Available Courses</Link>
                   <Link to="/my-courses">My Courses</Link>
-                  <Link to="/ai-recommendation" className="ai-link">
-                    ✨ AI Assistant
-                  </Link>
+                  <Link to="/ai-recommendation" className="ai-link">✨ AI Assistant</Link>
                 </>
               )}
 
@@ -39,22 +37,14 @@ const Navbar = () => {
               )}
 
               <div className="user-section">
-                <span className="user-badge">
-                  {user.name} ({user.role})
-                </span>
-                <button onClick={handleLogout} className="btn-logout">
-                  Logout
-                </button>
+                <span className="user-badge">{user.name} ({user.role})</span>
+                <button onClick={handleLogout} className="btn-logout">Logout</button>
               </div>
             </>
           ) : (
             <div className="auth-links">
-              <Link to="/login" className="nav-btn">
-                Login
-              </Link>
-              <Link to="/register" className="nav-btn btn-primary">
-                Register
-              </Link>
+              <Link to="/login" className="nav-btn">Login</Link>
+              <Link to="/register" className="nav-btn btn-primary">Register</Link>
             </div>
           )}
         </div>

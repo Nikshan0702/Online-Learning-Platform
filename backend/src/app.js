@@ -11,15 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/gpt', gptRoutes);
 
-
-
-// Health check route
 app.get('/', (req, res) => {
   res.json({ message: 'Online Learning Platform API is running' });
 });

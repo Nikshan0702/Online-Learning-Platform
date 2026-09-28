@@ -10,7 +10,7 @@ const AiRecommendation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!prompt.trim()) {
-      setError('Please tell us what you want to learn.');
+      setError('Please enter what you want to learn.');
       return;
     }
 
@@ -18,12 +18,10 @@ const AiRecommendation = () => {
       setLoading(true);
       setError('');
       setRecommendations('');
-
       const res = await api.post('/gpt/recommend', { prompt });
-      setRecommendations(res.data.recommendations || res.data.message || 'No recommendations generated.');
+      setRecommendations(res.data.recommendations || 'No recommendations generated.');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to get AI recommendations. Please try again.';
-      setError(msg);
+      setError(err.response?.data?.message || 'Failed to get recommendations.');
     } finally {
       setLoading(false);
     }
@@ -36,7 +34,7 @@ const AiRecommendation = () => {
           <span className="ai-icon">🤖</span>
           <h2>AI Course Assistant</h2>
           <p className="subtitle">
-            Tell us your career goals or what you'd like to learn, and our AI will recommend the best courses available on our platform!
+            Enter your learning goals and get personalized course recommendations from our platform.
           </p>
         </div>
 
@@ -56,23 +54,14 @@ const AiRecommendation = () => {
           </div>
 
           <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
-            {loading ? 'Analyzing courses...' : '✨ Get Recommendations'}
+            {loading ? 'Searching courses...' : '✨ Get Recommendations'}
           </button>
         </form>
-
-        {loading && (
-          <div className="loading-state" style={{ marginTop: '2rem' }}>
-            <div className="spinner"></div>
-            <p>Our AI is searching available platform courses to craft recommendations for you...</p>
-          </div>
-        )}
 
         {recommendations && (
           <div className="ai-results-box">
             <h3>Recommendations</h3>
-            <div className="ai-content">
-              <pre className="recommendation-pre">{recommendations}</pre>
-            </div>
+            <pre className="recommendation-pre">{recommendations}</pre>
           </div>
         )}
       </div>
