@@ -1,0 +1,36 @@
+### Dependencies
+node_modules/
+
+### Environment variables and local secrets
+.env
+.env.*
+!.env.example
+
+### Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+### Build output and caches
+dist/
+build/
+coverage/
+.next/
+.nuxt/
+.output/
+.turbo/
+.cache/
+.vite/
+
+### Local databases and uploaded files
+*.sqlite
+*.sqlite3
+uploads/
+
+### Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

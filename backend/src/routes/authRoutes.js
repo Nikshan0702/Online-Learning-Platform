@@ -1,0 +1,20 @@
+const express = require('express');
+const router = express.Router();
+const { register, login } = require('../controllers/authController');
+const authenticate = require('../middleware/authMiddleware');
+
+// POST /api/auth/register
+router.post('/register', register);
+
+// POST /api/auth/login
+router.post('/login', login);
+
+// GET /api/auth/me (Protected route to get current user info)
+router.get('/me', authenticate, (req, res) => {
+  res.json({ user: req.user });
+});
+
+module.exports = router;
+
+
+
