@@ -3,88 +3,52 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 
 const CreateCourse = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [content, setContent] = useState('');
+  const [form, setForm] = useState({ title: '', description: '', content: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (!title || !description || !content) {
-      setError('Please fill in all fields (Title, Description, and Content)');
-      return;
-    }
-
     try {
       setLoading(true);
-      await api.post('/courses', { title, description, content });
+      await api.post('/courses', form);
       navigate('/instructor');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to create course.';
-      setError(msg);
+      setError(err.response?.data?.message || 'Failed to create course');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="page-container form-page-container">
-      <div className="breadcrumbs">
-        <Link to="/instructor">← Back to Dashboard</Link>
-      </div>
+    <div className="page">
+      <Link to="/instructor" className="back-link">← Back to Dashboard</Link>
 
-      <div className="form-card">
+      <div className="form-page">
         <h2>Create New Course</h2>
-        <p className="subtitle">Publish a new learning module for students</p>
+        <p className="sub">Add a new course for students to enroll in</p>
 
         {error && <div className="alert alert-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="standard-form">
-          <div className="form-group">
-            <label htmlFor="title">Course Title</label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Master Full Stack Development"
-              required
-            />
+        <form onSubmit={handleSubmit} className="form">
+          <div className="field">
+            <label>Course Title</label>
+            <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Full Stack Development" required />
           </div>
-
-          <div className="form-group">
-            <label htmlFor="description">Short Description</label>
-            <textarea
-              id="description"
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief summary of what students will achieve..."
-              required
-            />
+          <div className="field">
+            <label>Description</label>
+            <textarea name="description" rows={3} value={form.description} onChange={handleChange} placeholder="Brief summary of the course..." required />
           </div>
-
-          <div className="form-group">
-            <label htmlFor="content">Course Content / Syllabus</label>
-            <textarea
-              id="content"
-              rows={8}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Module 1: Getting started&#10;Module 2: Core concepts&#10;Module 3: Hands-on project"
-              required
-            />
+          <div className="field">
+            <label>Course Content / Syllabus</label>
+            <textarea name="content" rows={8} value={form.content} onChange={handleChange} placeholder="Module 1: Introduction&#10;Module 2: Core Concepts&#10;Module 3: Final Project" required />
           </div>
-
           <div className="form-actions">
-            <Link to="/instructor" className="btn btn-secondary">
-              Cancel
-            </Link>
+            <Link to="/instructor" className="btn btn-secondary">Cancel</Link>
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Creating...' : 'Create Course'}
             </button>

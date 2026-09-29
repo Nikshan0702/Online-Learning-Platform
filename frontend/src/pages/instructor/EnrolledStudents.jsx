@@ -4,77 +4,60 @@ import api from '../../api/axios';
 
 const EnrolledStudents = () => {
   const { id } = useParams();
-  const [course, setCourse] = useState(null);
+  const [courseName, setCourseName] = useState('');
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchCourseAndStudents();
+    Promise.all([
+      api.get(`/courses/${id}`),
+      api.get(`/courses/${id}/students`),
+    ])
+      .then(([courseRes, studentsRes]) => {
+        setCourseName(courseRes.data.title);
+        setStudents(studentsRes.data);
+      })
+      .catch(err => setError(err.response?.data?.message || 'Failed to load data'))
+      .finally(() => setLoading(false));
   }, [id]);
 
-  const fetchCourseAndStudents = async () => {
-    try {
-      setLoading(true);
-      // Fetch course details for title header
-      const courseRes = await api.get(`/courses/${id}`);
-      setCourse(courseRes.data);
-
-      // Fetch enrolled students list
-      const studentsRes = await api.get(`/courses/${id}/students`);
-      setStudents(studentsRes.data);
-    } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to load enrolled students.';
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="page-container">
-      <div className="breadcrumbs">
-        <Link to="/instructor">← Back to Dashboard</Link>
-      </div>
+    <div className="page">
+      <Link to="/instructor" className="back-link">← Back to Dashboard</Link>
 
-      <div className="dashboard-header">
+      <div className="page-header">
         <div>
           <h1>Enrolled Students</h1>
-          <p className="subtitle">
-            Course: <strong>{course?.title || 'Loading...'}</strong>
-          </p>
+          <p>{courseName}</p>
         </div>
-        <span className="badge">{students.length} total students</span>
+        <span style={{ fontSize: '0.88rem', color: '#666' }}>{students.length} student{students.length !== 1 ? 's' : ''}</span>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
 
       {loading ? (
-        <div className="loading-state">Loading enrolled students...</div>
+        <div className="loading">Loading...</div>
       ) : students.length === 0 ? (
-        <div className="empty-state">
-          <p>No students have enrolled in this course yet.</p>
-        </div>
+        <div className="empty">No students enrolled yet.</div>
       ) : (
-        <div className="table-container">
-          <table className="data-table">
+        <div className="table-wrap">
+          <table>
             <thead>
               <tr>
-                <th>Student Name</th>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Status</th>
-                <th>Enrolled Date</th>
+                <th>Enrolled On</th>
               </tr>
             </thead>
             <tbody>
-              {students.map((student, index) => (
-                <tr key={student.id || index}>
-                  <td className="font-semibold">{student.name}</td>
-                  <td>{student.email}</td>
-                  <td>
-                    <span className="status-pill status-active">{student.status.toUpperCase()}</span>
-                  </td>
-                  <td>{new Date(student.enrolledAt).toLocaleDateString()}</td>
+              {students.map((s, i) => (
+                <tr key={s.id || i}>
+                  <td><strong>{s.name}</strong></td>
+                  <td>{s.email}</td>
+                  <td><span className="status">{s.status.toUpperCase()}</span></td>
+                  <td>{new Date(s.enrolledAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

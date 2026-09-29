@@ -9,98 +9,74 @@ const CourseDetails = () => {
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [enrolling, setEnrolling] = useState(false);
-  const [enrollSuccess, setEnrollSuccess] = useState('');
   const [error, setError] = useState('');
-  const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
+  const [enrolled, setEnrolled] = useState(false);
+  const [enrollMsg, setEnrollMsg] = useState('');
+  const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
-    fetchCourse();
-    if (isStudent) checkEnrollment();
+    api.get(`/courses/${id}`)
+      .then(res => setCourse(res.data))
+      .catch(() => setError('Course not found'))
+      .finally(() => setLoading(false));
+
+    if (isStudent) {
+      api.get('/enrollments/my-courses')
+        .then(res => setEnrolled(res.data.some(e => e.course?._id === id)))
+        .catch(() => {});
+    }
   }, [id]);
-
-  const fetchCourse = async () => {
-    try {
-      const res = await api.get(`/courses/${id}`);
-      setCourse(res.data);
-    } catch {
-      setError('Course not found.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkEnrollment = async () => {
-    try {
-      const res = await api.get('/enrollments/my-courses');
-      const enrolled = res.data.some((item) => item.course?._id === id);
-      setAlreadyEnrolled(enrolled);
-    } catch {
-      // ignore
-    }
-  };
 
   const handleEnroll = async () => {
     try {
       setEnrolling(true);
-      setError('');
       const res = await api.post('/enrollments', { courseId: id });
-      setEnrollSuccess(res.data.message);
-      setAlreadyEnrolled(true);
+      setEnrollMsg(res.data.message);
+      setEnrolled(true);
     } catch (err) {
-      setError(err.response?.data?.message || 'Enrollment failed.');
+      setError(err.response?.data?.message || 'Enrollment failed');
     } finally {
       setEnrolling(false);
     }
   };
 
-  if (loading) return <div className="page-container loading-state">Loading...</div>;
+  if (loading) return <div className="page"><div className="loading">Loading...</div></div>;
 
-  if (!course) {
-    return (
-      <div className="page-container empty-state">
-        <p>{error || 'Course not found'}</p>
-        <Link to="/courses" className="btn btn-secondary">← Back to Courses</Link>
-      </div>
-    );
-  }
+  if (!course) return (
+    <div className="page">
+      <div className="empty">{error}</div>
+      <Link to="/courses" className="btn btn-secondary" style={{ marginTop: '1rem' }}>← Back</Link>
+    </div>
+  );
 
   return (
-    <div className="page-container">
-      <div className="breadcrumbs">
-        <Link to="/courses">← Back to Courses</Link>
-      </div>
+    <div className="page">
+      <Link to="/courses" className="back-link">← Back to Courses</Link>
 
-      <div className="course-detail-card">
-        <div className="course-detail-header">
-          <h1>{course.title}</h1>
-          <p className="course-detail-instructor">
-            👤 Taught by <strong>{course.instructor?.name}</strong> ({course.instructor?.email})
-          </p>
+      <div className="detail-box">
+        <h1>{course.title}</h1>
+        <p className="instructor">By {course.instructor?.name} · {course.instructor?.email}</p>
+
+        {enrollMsg && <div className="alert alert-success" style={{ marginTop: '1rem' }}>{enrollMsg}</div>}
+        {error && <div className="alert alert-error" style={{ marginTop: '1rem' }}>{error}</div>}
+
+        <div className="section">
+          <h3>Description</h3>
+          <p>{course.description}</p>
         </div>
 
-        {enrollSuccess && <div className="alert alert-success">{enrollSuccess}</div>}
-        {error && <div className="alert alert-error">{error}</div>}
-
-        <div className="course-detail-section">
-          <h3>Overview</h3>
-          <p className="course-detail-desc">{course.description}</p>
-        </div>
-
-        <div className="course-detail-section">
+        <div className="section">
           <h3>Course Content</h3>
-          <div className="course-content-box">
-            <pre className="content-pre">{course.content}</pre>
-          </div>
+          <div className="content-block">{course.content}</div>
         </div>
 
         {isStudent && (
-          <div className="course-action-section">
-            {alreadyEnrolled ? (
-              <div className="enrolled-badge">✅ You are enrolled in this course (Status: Active)</div>
+          <div className="enroll-area">
+            {enrolled ? (
+              <div className="enrolled-msg">✅ You are enrolled in this course</div>
             ) : (
-              <button onClick={handleEnroll} disabled={enrolling} className="btn btn-primary btn-lg">
-                {enrolling ? 'Enrolling...' : 'Enroll in this Course'}
+              <button onClick={handleEnroll} disabled={enrolling} className="btn btn-primary">
+                {enrolling ? 'Enrolling...' : 'Enroll Now'}
               </button>
             )}
           </div>

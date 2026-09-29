@@ -10,69 +10,47 @@ const MyCourses = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchMyCourses();
+    api.get('/enrollments/my-courses')
+      .then(res => setEnrollments(res.data))
+      .catch(() => setError('Failed to load your courses'))
+      .finally(() => setLoading(false));
   }, []);
 
-  const fetchMyCourses = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/enrollments/my-courses');
-      setEnrollments(res.data);
-    } catch (err) {
-      setError('Failed to fetch your enrolled courses.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="page-container">
-      <div className="dashboard-header">
+    <div className="page">
+      <div className="page-header">
         <div>
-          <h1>My Enrolled Courses</h1>
-          <p className="subtitle">Welcome, {user?.name}. Here are the courses you are actively pursuing.</p>
+          <h1>My Courses</h1>
+          <p>Courses you are enrolled in, {user?.name}.</p>
         </div>
-        <Link to="/courses" className="btn btn-secondary">
-          + Explore More Courses
-        </Link>
+        <Link to="/courses" className="btn btn-secondary">Browse Courses</Link>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
 
       {loading ? (
-        <div className="loading-state">Loading your courses...</div>
+        <div className="loading">Loading...</div>
       ) : enrollments.length === 0 ? (
-        <div className="empty-state">
+        <div className="empty">
           <p>You have not enrolled in any courses yet.</p>
-          <Link to="/courses" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-            Browse Courses
-          </Link>
+          <Link to="/courses" className="btn btn-primary" style={{ marginTop: '1rem' }}>Browse Courses</Link>
         </div>
       ) : (
-        <div className="course-grid">
-          {enrollments.map((item) => (
-            <div key={item._id} className="course-card">
-              <div className="course-card-body">
-                <div className="card-top-tag">
-                  <span className="status-pill status-active">{item.status.toUpperCase()}</span>
+        <div className="card-grid">
+          {enrollments.map(item => (
+            <div key={item._id} className="card">
+              <div className="card-body">
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <span className="status">{item.status.toUpperCase()}</span>
                 </div>
-                <h3 className="course-title">{item.course?.title || 'Course'}</h3>
-                <p className="course-desc">{item.course?.description || 'No description available'}</p>
-                <div className="course-meta">
-                  <p>
-                    👤 Instructor: <strong>{item.course?.instructor?.name || 'Instructor'}</strong>
-                  </p>
-                  <p className="enrolled-date">
-                    📅 Enrolled: {new Date(item.enrolledAt).toLocaleDateString()}
-                  </p>
+                <h3>{item.course?.title}</h3>
+                <p>{item.course?.description}</p>
+                <div className="card-meta">
+                  By {item.course?.instructor?.name} · Enrolled {new Date(item.enrolledAt).toLocaleDateString()}
                 </div>
               </div>
-              <div className="course-card-footer">
-                {item.course && (
-                  <Link to={`/courses/${item.course._id}`} className="btn btn-outline btn-block">
-                    View Course Content
-                  </Link>
-                )}
+              <div className="card-footer">
+                <Link to={`/courses/${item.course?._id}`} className="btn btn-secondary btn-block">View Course</Link>
               </div>
             </div>
           ))}

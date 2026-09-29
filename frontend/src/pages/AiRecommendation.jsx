@@ -3,68 +3,59 @@ import api from '../api/axios';
 
 const AiRecommendation = () => {
   const [prompt, setPrompt] = useState('');
-  const [recommendations, setRecommendations] = useState('');
+  const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!prompt.trim()) {
-      setError('Please enter what you want to learn.');
-      return;
-    }
-
+    if (!prompt.trim()) return;
     try {
       setLoading(true);
       setError('');
-      setRecommendations('');
+      setResult('');
       const res = await api.post('/gpt/recommend', { prompt });
-      setRecommendations(res.data.recommendations || 'No recommendations generated.');
+      setResult(res.data.recommendations);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to get recommendations.');
+      setError(err.response?.data?.message || 'Failed to get recommendations');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="page-container form-page-container">
-      <div className="form-card ai-card">
-        <div className="ai-header">
-          <span className="ai-icon">🤖</span>
-          <h2>AI Course Assistant</h2>
-          <p className="subtitle">
-            Enter your learning goals and get personalized course recommendations from our platform.
-          </p>
+    <div className="ai-page">
+      <div className="page-header">
+        <div>
+          <h1>AI Course Recommendations</h1>
+          <p>Tell us what you want to learn and we'll suggest the best courses.</p>
         </div>
-
-        {error && <div className="alert alert-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="standard-form">
-          <div className="form-group">
-            <label htmlFor="prompt">What do you want to learn?</label>
-            <textarea
-              id="prompt"
-              rows={4}
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="e.g. I want to become a software engineer. What courses should I follow?"
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
-            {loading ? 'Searching courses...' : '✨ Get Recommendations'}
-          </button>
-        </form>
-
-        {recommendations && (
-          <div className="ai-results-box">
-            <h3>Recommendations</h3>
-            <pre className="recommendation-pre">{recommendations}</pre>
-          </div>
-        )}
       </div>
+
+      {error && <div className="alert alert-error">{error}</div>}
+
+      <form onSubmit={handleSubmit} className="form-page form">
+        <div className="field">
+          <label>What do you want to learn?</label>
+          <textarea
+            rows={4}
+            value={prompt}
+            onChange={e => setPrompt(e.target.value)}
+            placeholder="e.g. I want to become a web developer. What should I learn?"
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'Getting recommendations...' : 'Get Recommendations'}
+        </button>
+      </form>
+
+      {result && (
+        <div className="ai-result">
+          <h3>Recommendations</h3>
+          <pre>{result}</pre>
+        </div>
+      )}
     </div>
   );
 };

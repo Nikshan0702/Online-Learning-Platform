@@ -10,69 +10,42 @@ const CourseList = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchCourses();
+    api.get('/courses')
+      .then(res => setCourses(res.data))
+      .catch(() => setError('Failed to load courses'))
+      .finally(() => setLoading(false));
   }, []);
 
-  const fetchCourses = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/courses');
-      setCourses(res.data);
-    } catch (err) {
-      setError('Failed to load courses. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="page-container">
-      {/* Student Welcome Header */}
-      <div className="dashboard-header">
+    <div className="page">
+      <div className="page-header">
         <div>
-          <h1>Welcome, {user?.name}!</h1>
-          <p className="subtitle">Explore all available courses and enroll to start learning.</p>
+          <h1>Courses</h1>
+          <p>Welcome, {user?.name}. Browse and enroll in available courses.</p>
         </div>
-        <div className="quick-actions">
-          <Link to="/my-courses" className="btn btn-secondary">
-            📚 My Courses
-          </Link>
-          <Link to="/ai-recommendation" className="btn btn-primary">
-            ✨ AI Recommendation
-          </Link>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Link to="/my-courses" className="btn btn-secondary">My Courses</Link>
+          <Link to="/ai-recommendation" className="btn btn-primary">AI Recommend</Link>
         </div>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
 
-      <div className="section-title">
-        <h2>Available Courses</h2>
-        <span className="badge">{courses.length} courses</span>
-      </div>
-
       {loading ? (
-        <div className="loading-state">Loading courses...</div>
+        <div className="loading">Loading courses...</div>
       ) : courses.length === 0 ? (
-        <div className="empty-state">
-          <p>No courses available at the moment. Please check back later.</p>
-        </div>
+        <div className="empty">No courses available yet.</div>
       ) : (
-        <div className="course-grid">
-          {courses.map((course) => (
-            <div key={course._id} className="course-card">
-              <div className="course-card-body">
-                <h3 className="course-title">{course.title}</h3>
-                <p className="course-desc">{course.description}</p>
-                <div className="course-meta">
-                  <span className="meta-instructor">
-                    👤 Instructor: <strong>{course.instructor?.name || 'Instructor'}</strong>
-                  </span>
-                </div>
+        <div className="card-grid">
+          {courses.map(course => (
+            <div key={course._id} className="card">
+              <div className="card-body">
+                <h3>{course.title}</h3>
+                <p>{course.description}</p>
+                <div className="card-meta">By {course.instructor?.name}</div>
               </div>
-              <div className="course-card-footer">
-                <Link to={`/courses/${course._id}`} className="btn btn-outline btn-block">
-                  View Details
-                </Link>
+              <div className="card-footer">
+                <Link to={`/courses/${course._id}`} className="btn btn-secondary btn-block">View Details</Link>
               </div>
             </div>
           ))}
