@@ -37,11 +37,11 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="form">
           <div className="field">
             <label>Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className="field">
             <label>Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}

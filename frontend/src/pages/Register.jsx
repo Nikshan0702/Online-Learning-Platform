@@ -38,15 +38,15 @@ const Register = () => {
         <form onSubmit={handleSubmit} className="form">
           <div className="field">
             <label>Full Name</label>
-            <input name="name" value={form.name} onChange={handleChange} placeholder="Your name" required />
+            <input name="name" value={form.name} onChange={handleChange} required />
           </div>
           <div className="field">
             <label>Email</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@example.com" required />
+            <input name="email" type="email" value={form.email} onChange={handleChange} required />
           </div>
           <div className="field">
             <label>Password</label>
-            <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" required />
+            <input name="password" type="password" value={form.password} onChange={handleChange} required />
           </div>
           <div className="field">
             <label>Role</label>

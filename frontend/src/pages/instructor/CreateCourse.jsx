@@ -37,15 +37,15 @@ const CreateCourse = () => {
         <form onSubmit={handleSubmit} className="form">
           <div className="field">
             <label>Course Title</label>
-            <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Full Stack Development" required />
+            <input name="title" value={form.title} onChange={handleChange} required />
           </div>
           <div className="field">
             <label>Description</label>
-            <textarea name="description" rows={3} value={form.description} onChange={handleChange} placeholder="Brief summary of the course..." required />
+            <textarea name="description" rows={3} value={form.description} onChange={handleChange} required />
           </div>
           <div className="field">
             <label>Course Content / Syllabus</label>
-            <textarea name="content" rows={8} value={form.content} onChange={handleChange} placeholder="Module 1: Introduction&#10;Module 2: Core Concepts&#10;Module 3: Final Project" required />
+            <textarea name="content" rows={8} value={form.content} onChange={handleChange} required />
           </div>
           <div className="form-actions">
             <Link to="/instructor" className="btn btn-secondary">Cancel</Link>

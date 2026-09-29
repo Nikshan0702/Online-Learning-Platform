@@ -41,7 +41,6 @@ const AiRecommendation = () => {
             rows={4}
             value={prompt}
             onChange={e => setPrompt(e.target.value)}
-            placeholder="e.g. I want to become a web developer. What should I learn?"
             required
           />
         </div>
