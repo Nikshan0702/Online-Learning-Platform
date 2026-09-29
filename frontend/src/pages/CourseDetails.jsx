@@ -73,7 +73,7 @@ const CourseDetails = () => {
         {isStudent && (
           <div className="enroll-area">
             {enrolled ? (
-              <div className="enrolled-msg">✅ You are enrolled in this course</div>
+              <div className="enrolled-msg">You are enrolled in this course</div>
             ) : (
               <button onClick={handleEnroll} disabled={enrolling} className="btn btn-primary">
                 {enrolling ? 'Enrolling...' : 'Enroll Now'}

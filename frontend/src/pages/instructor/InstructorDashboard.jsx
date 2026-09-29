@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 
@@ -9,6 +9,7 @@ const InstructorDashboard = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/courses?mine=true')
@@ -35,7 +36,7 @@ const InstructorDashboard = () => {
           <h1>My Courses</h1>
           <p>Welcome, {user?.name}. Manage your courses below.</p>
         </div>
-        <Link to="/instructor/courses/create" className="btn btn-primary">+ New Course</Link>
+        <button onClick={() => navigate('/instructor/courses/create')} className="btn btn-primary">+ New Course</button>
       </div>
 
       {success && <div className="alert alert-success">{success}</div>}
@@ -46,7 +47,7 @@ const InstructorDashboard = () => {
       ) : courses.length === 0 ? (
         <div className="empty">
           <p>No courses yet.</p>
-          <Link to="/instructor/courses/create" className="btn btn-primary" style={{ marginTop: '1rem' }}>Create First Course</Link>
+          <button onClick={() => navigate('/instructor/courses/create')} className="btn btn-primary" style={{ marginTop: '1rem' }}>Create First Course</button>
         </div>
       ) : (
         <div className="rows">
