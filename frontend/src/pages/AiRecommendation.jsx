@@ -28,7 +28,7 @@ const AiRecommendation = () => {
       <div className="page-header">
         <div>
           <h1>AI Course Recommendations</h1>
-          <p>Tell us what you want to learn and we'll suggest the best courses.</p>
+          <p>Enter your learning goals (e.g. "I want to be a software engineer, what courses I should follow") to receive personalized course recommendations.</p>
         </div>
       </div>
 
