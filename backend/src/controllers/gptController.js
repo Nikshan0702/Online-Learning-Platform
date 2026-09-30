@@ -24,7 +24,7 @@ const getCourseRecommendations = async (req, res) => {
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
-          signal: AbortSignal.timeout(2000),
+          signal: AbortSignal.timeout(7000),
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${apiKey}`,
@@ -35,15 +35,15 @@ const getCourseRecommendations = async (req, res) => {
               {
                 role: 'system',
                 content:
-                  'You are a course recommendation assistant. Only recommend courses from the provided list. Do not invent courses.',
+                  'You are an educational assistant for an online learning platform. Recommend the best matching courses from the provided list based on the student request. Only recommend courses from the provided list. For each recommendation, provide the course title and a brief explanation.',
               },
               {
                 role: 'user',
-                content: `Available courses on our platform:\n\n${courseListText}\n\nStudent request: "${prompt}"\n\nRecommend the most relevant courses from the list above. For each, give the course name and a short reason.`,
+                content: `Available courses:\n\n${courseListText}\n\nStudent request: "${prompt}"\n\nRecommend the most relevant courses for this student.`,
               },
             ],
             temperature: 0.7,
-            max_tokens: 250,
+            max_tokens: 300,
           }),
         });
 
@@ -67,15 +67,17 @@ const getCourseRecommendations = async (req, res) => {
         const score = keywords.filter((word) => text.includes(word)).length;
         return { course, score };
       })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
+      .sort((a, b) => b.score - a.score);
 
-    const result = scored
+    const matched = scored.filter((item) => item.score > 0);
+    const selected = matched.length > 0 ? matched.slice(0, 3) : scored.slice(0, 3);
+
+    const result = selected
       .map((item) => `• ${item.course.title}\n  ${item.course.description}`)
       .join('\n\n');
 
     return res.status(200).json({
-      recommendations: `Based on your interest, here are recommended courses:\n\n${result}`,
+      recommendations: `Based on your request, here are recommended courses:\n\n${result}`,
     });
   } catch (error) {
     console.error(error.message);
