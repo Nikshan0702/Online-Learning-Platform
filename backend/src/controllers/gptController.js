@@ -24,12 +24,13 @@ const getCourseRecommendations = async (req, res) => {
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
+          signal: AbortSignal.timeout(2000),
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o-mini',
             messages: [
               {
                 role: 'system',
@@ -42,7 +43,7 @@ const getCourseRecommendations = async (req, res) => {
               },
             ],
             temperature: 0.7,
-            max_tokens: 400,
+            max_tokens: 250,
           }),
         });
 
