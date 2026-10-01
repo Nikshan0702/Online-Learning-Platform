@@ -8,18 +8,7 @@ Instructors can create and manage their courses and view the students enrolled i
 
 This project was developed as part of a Full Stack Developer assessment, with a focus on keeping the implementation simple, secure, and easy to understand.
 
----
 
-## Live Application
-
-**Frontend:**  
-`<YOUR_DEPLOYED_FRONTEND_URL>`
-
-**Backend API:**  
-`<YOUR_DEPLOYED_BACKEND_URL>`
-
-**GitHub Repository:**  
-https://github.com/Nikshan0702/Online-Learning-Platform
 
 > Replace the placeholder URLs above with the actual deployed URLs before submitting.
 
