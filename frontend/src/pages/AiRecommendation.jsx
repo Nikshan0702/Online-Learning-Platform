@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
 const AiRecommendation = () => {
   const [prompt, setPrompt] = useState('');
-  const [result, setResult] = useState('');
+  const [message, setMessage] = useState('');
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,9 +15,11 @@ const AiRecommendation = () => {
     try {
       setLoading(true);
       setError('');
-      setResult('');
+      setMessage('');
+      setCourses([]);
       const res = await api.post('/gpt/recommend', { prompt });
-      setResult(res.data.recommendations);
+      setMessage(res.data.message || res.data.recommendations || '');
+      setCourses(res.data.courses || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to get recommendations');
     } finally {
@@ -40,19 +44,48 @@ const AiRecommendation = () => {
           <textarea
             rows={4}
             value={prompt}
-            onChange={e => setPrompt(e.target.value)}
+            onChange={(e) => setPrompt(e.target.value)}
             required
           />
         </div>
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Getting recommendations...' : 'Get Recommendations'}
+          {loading ? 'Analyzing courses...' : 'Get Recommendations'}
         </button>
       </form>
 
-      {result && (
-        <div className="ai-result">
-          <h3>Recommendations</h3>
-          <pre>{result}</pre>
+      {message && (
+        <div className="ai-note">
+          <strong>💡 AI Advisor Recommendation:</strong>
+          <p style={{ marginTop: '0.4rem', whiteSpace: 'pre-wrap' }}>{message}</p>
+        </div>
+      )}
+
+      {courses.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', fontWeight: 600 }}>
+            Recommended Courses ({courses.length})
+          </h2>
+          <div className="card-grid">
+            {courses.map((course) => (
+              <div key={course._id} className="card">
+                <div className="card-body">
+                  <h3>{course.title}</h3>
+                  <p>{course.description}</p>
+                  <div className="card-meta">
+                    By {course.instructor?.name || 'Instructor'}
+                  </div>
+                </div>
+                <div className="card-footer">
+                  <Link
+                    to={`/courses/${course._id}`}
+                    className="btn btn-primary btn-block"
+                  >
+                    View Course Details →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

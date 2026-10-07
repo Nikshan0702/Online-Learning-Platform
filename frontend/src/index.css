@@ -228,7 +228,7 @@ tr:last-child td { border-bottom: none; }
 .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.88rem; color: #555; }
 
 /* AI Page */
-.ai-page { max-width: 680px; margin: 0 auto; padding: 2rem 1.5rem; }
+.ai-page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
 .ai-result {
   margin-top: 1.5rem;
   background: #f0fdf4;
@@ -238,6 +238,16 @@ tr:last-child td { border-bottom: none; }
 }
 .ai-result h3 { font-size: 1rem; font-weight: 600; color: #166534; margin-bottom: 0.75rem; }
 .ai-result pre { white-space: pre-wrap; font-family: inherit; font-size: 0.9rem; color: #14532d; line-height: 1.6; }
+.ai-note {
+  margin-top: 1.5rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 7px;
+  padding: 1.1rem 1.25rem;
+  color: #14532d;
+  font-size: 0.93rem;
+  line-height: 1.6;
+}
 
 /* Responsive */
 @media (max-width: 640px) {
